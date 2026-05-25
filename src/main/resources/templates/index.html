@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<div th:fragment="content">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-3xl font-bold mb-6">Bem-vindo ao Sistema de Gestão de Condomínio</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a th:href="@{/unidades}" class="block p-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                <h3 class="text-xl font-bold mb-2">Unidades</h3>
+                <p>Gerenciar unidades do condomínio</p>
+            </a>
+            
+            <a th:href="@{/moradores}" class="block p-6 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                <h3 class="text-xl font-bold mb-2">Moradores</h3>
+                <p>Gerenciar moradores</p>
+            </a>
+            
+            <a th:href="@{/visitantes}" class="block p-6 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition">
+                <h3 class="text-xl font-bold mb-2">Visitantes</h3>
+                <p>Gerenciar visitantes</p>
+            </a>
+            
+            <a th:href="@{/reservas}" class="block p-6 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
+                <h3 class="text-xl font-bold mb-2">Reservas</h3>
+                <p>Gerenciar reservas de áreas comuns</p>
+            </a>
+            
+            <a th:href="@{/ocorrencias}" class="block p-6 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                <h3 class="text-xl font-bold mb-2">Ocorrências</h3>
+                <p>Gerenciar ocorrências</p>
+            </a>
+        </div>
+    </div>
+</div>
+</html>
