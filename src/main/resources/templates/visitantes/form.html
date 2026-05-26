@@ -25,7 +25,8 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 font-bold mb-2">Telefone</label>
-                    <input type="text" th:field="*{telefone}" class="w-full border rounded px-3 py-2" maxlength="15">
+                    <input type="text" th:field="*{telefone}" class="w-full border rounded px-3 py-2" maxlength="15"
+                           placeholder="(00) 00000-0000" oninput="maskTelefone(this)">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 font-bold mb-2">Tipo Visitante *</label>
@@ -57,5 +58,15 @@
             </form>
         </div>
     </div>
+    <script>
+        function maskTelefone(input) {
+            let v = input.value.replace(/\D/g, '').slice(0, 11);
+            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+            else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            else if (v.length > 0) v = v.replace(/^(\d{0,2})/, '($1');
+            input.value = v;
+        }
+    </script>
 </body>
 </html>
