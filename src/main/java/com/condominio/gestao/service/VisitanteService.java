@@ -1,7 +1,9 @@
 package com.condominio.gestao.service;
 
 import com.condominio.gestao.exception.BusinessException;
+import com.condominio.gestao.model.Morador;
 import com.condominio.gestao.model.Visitante;
+import com.condominio.gestao.repository.MoradorRepository;
 import com.condominio.gestao.repository.VisitanteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.List;
 public class VisitanteService {
 
     private final VisitanteRepository repository;
+    private final MoradorRepository moradorRepository;
 
     public List<Visitante> findAll() {
         return repository.findAll();
@@ -27,8 +30,10 @@ public class VisitanteService {
     @Transactional
     public Visitante save(Visitante visitante) {
         if (visitante.getAutorizadoPor() != null) {
-            if (!visitante.getAutorizadoPor().getUnidade().getId()
-                    .equals(visitante.getUnidade().getId())) {
+            Morador autorizador = moradorRepository.findById(visitante.getAutorizadoPor().getId())
+                    .orElseThrow(() -> new BusinessException("Morador autorizador não encontrado"));
+            visitante.setAutorizadoPor(autorizador);
+            if (!autorizador.getUnidade().getId().equals(visitante.getUnidade().getId())) {
                 throw new BusinessException(
                         "O autorizador deve ser morador da mesma unidade do visitante");
             }
