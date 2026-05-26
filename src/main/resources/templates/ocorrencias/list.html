@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head><title>Ocorrências</title></head>
+<body>
+    <div th:fragment="content">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Ocorrências</h2>
+            <a href="/ocorrencias/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Nova Ocorrência</a>
+        </div>
+        <div class="bg-white shadow-md rounded overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Título</th>
+                        <th class="px-6 py-3 text-left">Tipo</th>
+                        <th class="px-6 py-3 text-left">Prioridade</th>
+                        <th class="px-6 py-3 text-left">Status</th>
+                        <th class="px-6 py-3 text-left">Data Abertura</th>
+                        <th class="px-6 py-3 text-left">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ocorrencia : ${ocorrencias}" class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4" th:text="${ocorrencia.titulo}"></td>
+                        <td class="px-6 py-4" th:text="${ocorrencia.tipo}"></td>
+                        <td class="px-6 py-4" th:text="${ocorrencia.prioridade}"></td>
+                        <td class="px-6 py-4" th:text="${ocorrencia.status}"></td>
+                        <td class="px-6 py-4" th:text="${#temporals.format(ocorrencia.dataHoraAbertura, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="px-6 py-4">
+                            <a th:href="@{/ocorrencias/edit/{id}(id=${ocorrencia.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
+                            <a th:href="@{/ocorrencias/delete/{id}(id=${ocorrencia.id})}" class="text-red-600 hover:underline" 
+                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

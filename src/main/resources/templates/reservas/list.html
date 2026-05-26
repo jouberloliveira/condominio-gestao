@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head><title>Reservas</title></head>
+<body>
+    <div th:fragment="content">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Reservas</h2>
+            <a href="/reservas/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Nova Reserva</a>
+        </div>
+        <div class="bg-white shadow-md rounded overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Unidade</th>
+                        <th class="px-6 py-3 text-left">Solicitante</th>
+                        <th class="px-6 py-3 text-left">Área</th>
+                        <th class="px-6 py-3 text-left">Início</th>
+                        <th class="px-6 py-3 text-left">Fim</th>
+                        <th class="px-6 py-3 text-left">Status</th>
+                        <th class="px-6 py-3 text-left">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reserva : ${reservas}" class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4" th:text="${reserva.unidade.identificacao}"></td>
+                        <td class="px-6 py-4" th:text="${reserva.solicitante.nome}"></td>
+                        <td class="px-6 py-4" th:text="${reserva.area}"></td>
+                        <td class="px-6 py-4" th:text="${#temporals.format(reserva.inicio, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="px-6 py-4" th:text="${#temporals.format(reserva.fim, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td class="px-6 py-4" th:text="${reserva.status}"></td>
+                        <td class="px-6 py-4">
+                            <a th:href="@{/reservas/edit/{id}(id=${reserva.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
+                            <a th:href="@{/reservas/delete/{id}(id=${reserva.id})}" class="text-red-600 hover:underline" 
+                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

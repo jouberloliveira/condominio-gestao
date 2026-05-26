@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<head><title>Visitantes</title></head>
+<body>
+    <div th:fragment="content">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Visitantes</h2>
+            <a href="/visitantes/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Novo Visitante</a>
+        </div>
+        <div class="bg-white shadow-md rounded overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-left">Nome</th>
+                        <th class="px-6 py-3 text-left">Unidade</th>
+                        <th class="px-6 py-3 text-left">Tipo</th>
+                        <th class="px-6 py-3 text-left">Autorizado Por</th>
+                        <th class="px-6 py-3 text-left">Ativo</th>
+                        <th class="px-6 py-3 text-left">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="visitante : ${visitantes}" class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4" th:text="${visitante.nome}"></td>
+                        <td class="px-6 py-4" th:text="${visitante.unidade.identificacao}"></td>
+                        <td class="px-6 py-4" th:text="${visitante.tipoVisitante}"></td>
+                        <td class="px-6 py-4" th:text="${visitante.autorizadoPor != null} ? ${visitante.autorizadoPor.nome} : '-'"></td>
+                        <td class="px-6 py-4" th:text="${visitante.ativo}"></td>
+                        <td class="px-6 py-4">
+                            <a th:href="@{/visitantes/edit/{id}(id=${visitante.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
+                            <a th:href="@{/visitantes/delete/{id}(id=${visitante.id})}" class="text-red-600 hover:underline" 
+                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
