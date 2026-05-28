@@ -1,10 +1,11 @@
 package com.condominio.gestao.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.condominio.gestao.exception.BusinessException;
 import com.condominio.gestao.model.Unidade;
 import com.condominio.gestao.service.UnidadeService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,10 +14,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/unidades")
-@RequiredArgsConstructor
 public class UnidadeController {
 
-    private final UnidadeService service;
+    @Autowired
+    private UnidadeService service;
 
     @GetMapping
     public String list(Model model) {

@@ -1,20 +1,21 @@
 package com.condominio.gestao.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.condominio.gestao.enums.StatusOcorrencia;
 import com.condominio.gestao.exception.BusinessException;
 import com.condominio.gestao.model.Ocorrencia;
 import com.condominio.gestao.repository.OcorrenciaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class OcorrenciaService {
 
-    private final OcorrenciaRepository repository;
+    @Autowired
+    private OcorrenciaRepository repository;
 
     public List<Ocorrencia> findAll() {
         return repository.findAll();

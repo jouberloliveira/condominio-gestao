@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login — Gestão de Condomínio</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f0f4f8; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 360px; }
+        h1 { margin-top: 0; font-size: 1.5rem; color: #333; }
+        label { display: block; margin-bottom: 0.25rem; font-size: 0.9rem; color: #555; }
+        input { width: 100%; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 0.75rem; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button:hover { background: #2563eb; }
+        .alert { padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .alert-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Gestão de Condomínio</h1>
+    <div th:if="${param.error}" class="alert alert-danger">Usuário ou senha inválidos.</div>
+    <div th:if="${param.logout}" class="alert alert-success">Sessão encerrada com sucesso.</div>
+    <form th:action="@{/login}" method="post">
+        <label for="username">Usuário</label>
+        <input id="username" name="username" type="text" placeholder="admin" autofocus/>
+        <label for="password">Senha</label>
+        <input id="password" name="password" type="password" placeholder="••••••••"/>
+        <button type="submit">Entrar</button>
+    </form>
+</div>
+</body>
+</html>

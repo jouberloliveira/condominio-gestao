@@ -1,19 +1,20 @@
 package com.condominio.gestao.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.condominio.gestao.exception.BusinessException;
 import com.condominio.gestao.model.Unidade;
 import com.condominio.gestao.repository.UnidadeRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UnidadeService {
 
-    private final UnidadeRepository repository;
+    @Autowired
+    private UnidadeRepository repository;
 
     public List<Unidade> findAll() {
         return repository.findAll();

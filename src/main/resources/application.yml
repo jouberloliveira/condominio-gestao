@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: condominio-gestao
+  profiles:
+    active: dev
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.condominio: DEBUG

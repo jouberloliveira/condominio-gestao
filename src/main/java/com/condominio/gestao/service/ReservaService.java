@@ -1,20 +1,21 @@
 package com.condominio.gestao.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.condominio.gestao.enums.StatusReserva;
 import com.condominio.gestao.exception.BusinessException;
 import com.condominio.gestao.model.Reserva;
 import com.condominio.gestao.repository.ReservaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ReservaService {
 
-    private final ReservaRepository repository;
+    @Autowired
+    private ReservaRepository repository;
 
     public List<Reserva> findAll() {
         return repository.findAll();

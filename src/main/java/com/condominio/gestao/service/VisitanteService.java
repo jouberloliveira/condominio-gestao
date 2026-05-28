@@ -1,22 +1,24 @@
 package com.condominio.gestao.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.condominio.gestao.exception.BusinessException;
 import com.condominio.gestao.model.Morador;
 import com.condominio.gestao.model.Visitante;
 import com.condominio.gestao.repository.MoradorRepository;
 import com.condominio.gestao.repository.VisitanteRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class VisitanteService {
 
-    private final VisitanteRepository repository;
-    private final MoradorRepository moradorRepository;
+    @Autowired
+    private VisitanteRepository repository;
+    @Autowired
+    private MoradorRepository moradorRepository;
 
     public List<Visitante> findAll() {
         return repository.findAll();

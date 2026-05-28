@@ -1,12 +1,13 @@
 package com.condominio.gestao.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.condominio.gestao.exception.BusinessException;
 import com.condominio.gestao.model.Visitante;
 import com.condominio.gestao.service.VisitanteService;
 import com.condominio.gestao.service.UnidadeService;
 import com.condominio.gestao.service.MoradorService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,12 +16,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/visitantes")
-@RequiredArgsConstructor
 public class VisitanteController {
 
-    private final VisitanteService service;
-    private final UnidadeService unidadeService;
-    private final MoradorService moradorService;
+    @Autowired
+    private VisitanteService service;
+    @Autowired
+    private UnidadeService unidadeService;
+    @Autowired
+    private MoradorService moradorService;
 
     @GetMapping
     public String list(Model model) {
