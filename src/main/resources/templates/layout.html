@@ -1,35 +1,224 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(content)"
+      lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${title} ?: 'Gestão de Condomínio'">Gestão de Condomínio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <nav class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Gestão de Condomínio</h1>
-            <div class="space-x-4">
-                <a th:href="@{/}" class="hover:underline">Home</a>
-                <a th:href="@{/unidades}" class="hover:underline">Unidades</a>
-                <a th:href="@{/moradores}" class="hover:underline">Moradores</a>
-                <a th:href="@{/visitantes}" class="hover:underline">Visitantes</a>
-                <a th:href="@{/reservas}" class="hover:underline">Reservas</a>
-                <a th:href="@{/ocorrencias}" class="hover:underline">Ocorrências</a>
+<body class="bg-gray-50 min-h-screen flex">
+
+<!-- Sidebar -->
+<aside id="sidebar"
+       class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 text-white flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+
+    <!-- Brand -->
+    <div class="flex items-center gap-3 px-6 py-5 border-b border-gray-700">
+        <div class="w-9 h-9 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-sm font-bold leading-tight">Gestão de</p>
+            <p class="text-xs text-gray-400 leading-tight">Condomínio</p>
+        </div>
+    </div>
+
+    <!-- User badge -->
+    <div class="px-4 py-3 mx-3 mt-4 bg-gray-800 rounded-lg">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                <span sec:authentication="name" class="uppercase">U</span>
+            </div>
+            <div class="min-w-0">
+                <p class="text-sm font-medium truncate" sec:authentication="name">Usuário</p>
+                <p class="text-xs text-gray-400" sec:authorize="hasRole('ADMIN')">Administrador</p>
+                <p class="text-xs text-gray-400" sec:authorize="hasRole('MORADOR')">Morador</p>
+                <p class="text-xs text-gray-400" sec:authorize="hasRole('PORTEIRO')">Porteiro</p>
             </div>
         </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+
+        <!-- Common: Dashboard -->
+        <a th:href="@{/dashboard}"
+           th:classappend="${currentPage == 'dashboard'} ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'"
+           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Dashboard
+        </a>
+
+        <!-- ADMIN only -->
+        <div sec:authorize="hasRole('ADMIN')">
+            <p class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administração</p>
+
+            <a th:href="@{/unidades}"
+               th:classappend="${currentPage == 'unidades'} ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/>
+                </svg>
+                Unidades
+            </a>
+
+            <a th:href="@{/moradores}"
+               th:classappend="${currentPage == 'moradores'} ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Moradores
+            </a>
+        </div>
+
+        <!-- ADMIN + PORTEIRO -->
+        <div sec:authorize="hasAnyRole('ADMIN','PORTEIRO')">
+            <p class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acesso</p>
+
+            <a th:href="@{/visitantes}"
+               th:classappend="${currentPage == 'visitantes'} ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Visitantes
+            </a>
+        </div>
+
+        <!-- ADMIN + MORADOR -->
+        <div sec:authorize="hasAnyRole('ADMIN','MORADOR')">
+            <p class="px-3 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Área Comum</p>
+
+            <a th:href="@{/reservas}"
+               th:classappend="${currentPage == 'reservas'} ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Reservas
+            </a>
+
+            <a th:href="@{/ocorrencias}"
+               th:classappend="${currentPage == 'ocorrencias'} ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                Ocorrências
+            </a>
+        </div>
     </nav>
-    
-    <div class="container mx-auto mt-6 p-4">
-        <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+
+    <!-- Logout -->
+    <div class="p-3 border-t border-gray-700">
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit"
+                    class="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-red-900 hover:text-red-300 transition-colors">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Sair
+            </button>
+        </form>
+    </div>
+</aside>
+
+<!-- Overlay (mobile) -->
+<div id="sidebar-overlay"
+     onclick="toggleSidebar()"
+     class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+
+<!-- Main content -->
+<div class="flex-1 flex flex-col lg:ml-64 min-h-screen">
+
+    <!-- Top header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+        <div class="flex items-center justify-between px-4 py-3">
+            <button onclick="toggleSidebar()"
+                    class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-800 hidden sm:block" th:text="${title} ?: 'Dashboard'">Dashboard</h1>
+            <div class="flex items-center gap-3">
+                <!-- Role badge -->
+                <span sec:authorize="hasRole('ADMIN')"
+                      class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    ADMIN
+                </span>
+                <span sec:authorize="hasRole('MORADOR')"
+                      class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    MORADOR
+                </span>
+                <span sec:authorize="hasRole('PORTEIRO')"
+                      class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    PORTEIRO
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="flex-1 p-4 md:p-6">
+        <!-- Flash messages -->
+        <div th:if="${success}"
+             class="mb-4 flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 text-green-800 text-sm rounded-lg">
+            <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
             <span th:text="${success}"></span>
         </div>
-        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div th:if="${error}"
+             class="mb-4 flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-lg">
+            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
             <span th:text="${error}"></span>
         </div>
-        
-        <div th:replace="${content}"></div>
-    </div>
+
+        <th:block th:replace="${content}"/>
+    </main>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+    }
+</script>
 </body>
 </html>
