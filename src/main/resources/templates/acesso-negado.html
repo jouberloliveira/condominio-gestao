@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::content})}"
+      lang="pt-BR">
+<th:block th:fragment="content">
+    <div class="min-h-[60vh] flex items-center justify-center">
+        <div class="text-center max-w-md">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6">
+                <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Acesso Negado</h2>
+            <p class="text-gray-500 mb-2">Código 403 — Sem permissão</p>
+            <p class="text-gray-600 text-sm mb-8">
+                Você não tem permissão para acessar esta página.
+                Se acredita que isso é um erro, entre em contato com o administrador do sistema.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a th:href="@{/dashboard}"
+                   class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Ir para Dashboard
+                </a>
+                <a th:href="@{javascript:history.back()}"
+                   class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Voltar
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

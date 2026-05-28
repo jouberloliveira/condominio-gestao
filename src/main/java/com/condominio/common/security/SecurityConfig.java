@@ -18,12 +18,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/login","/css/**","/js/**","/images/**").permitAll()
+                .requestMatchers("/login","/acesso-negado","/css/**","/js/**","/images/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
-            .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/",true).failureUrl("/login?error").permitAll())
+            .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/dashboard",true).failureUrl("/login?error").permitAll())
             .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll())
+            .exceptionHandling(e -> e.accessDeniedPage("/acesso-negado"))
             .headers(h -> h.frameOptions(fo -> fo.sameOrigin()))
             .csrf(c -> c.ignoringRequestMatchers("/h2-console/**"));
         return http.build();
