@@ -1,42 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
 <head><title>Reservas</title></head>
 <body>
-    <div th:fragment="content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold">Reservas</h2>
-            <a href="/reservas/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Nova Reserva</a>
-        </div>
-        <div class="bg-white shadow-md rounded overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left">Unidade</th>
-                        <th class="px-6 py-3 text-left">Solicitante</th>
-                        <th class="px-6 py-3 text-left">Área</th>
-                        <th class="px-6 py-3 text-left">Início</th>
-                        <th class="px-6 py-3 text-left">Fim</th>
-                        <th class="px-6 py-3 text-left">Status</th>
-                        <th class="px-6 py-3 text-left">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="reserva : ${reservas}" class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4" th:text="${reserva.unidade.identificacao}"></td>
-                        <td class="px-6 py-4" th:text="${reserva.solicitante.nome}"></td>
-                        <td class="px-6 py-4" th:text="${reserva.area}"></td>
-                        <td class="px-6 py-4" th:text="${#temporals.format(reserva.inicio, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td class="px-6 py-4" th:text="${#temporals.format(reserva.fim, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td class="px-6 py-4" th:text="${reserva.status}"></td>
-                        <td class="px-6 py-4">
-                            <a th:href="@{/reservas/edit/{id}(id=${reserva.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
-                            <a th:href="@{/reservas/delete/{id}(id=${reserva.id})}" class="text-red-600 hover:underline" 
-                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div th:fragment="content">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Reservas</h1>
+    <a th:href="@{/reservas/new}" class="btn-primary">+ Nova Reserva</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(reservas)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <p class="text-sm">Nenhuma reserva cadastrada</p>
     </div>
+    <div th:unless="${#lists.isEmpty(reservas)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Área</th>
+            <th class="table-th">Solicitante</th>
+            <th class="table-th">Unidade</th>
+            <th class="table-th">Início</th>
+            <th class="table-th">Fim</th>
+            <th class="table-th">Status</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="reserva : ${reservas}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${reserva.area}"></td>
+            <td class="table-td" th:text="${reserva.solicitante?.nome}"></td>
+            <td class="table-td" th:text="${reserva.unidade?.identificacao}"></td>
+            <td class="table-td" th:text="${#temporals.format(reserva.inicio, 'dd/MM/yyyy HH:mm')}"></td>
+            <td class="table-td" th:text="${#temporals.format(reserva.fim, 'dd/MM/yyyy HH:mm')}"></td>
+            <td class="table-td">
+              <span th:text="${reserva.status}"
+                    th:class="${reserva.status?.name() == 'CONFIRMADA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              (${reserva.status?.name() == 'SOLICITADA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              (${reserva.status?.name() == 'CANCELADA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600'))">
+              </span>
+            </td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/reservas/edit/{id}(id=${reserva.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/reservas/delete/{id}(id=${reserva.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

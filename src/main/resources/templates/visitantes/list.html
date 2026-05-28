@@ -1,40 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
 <head><title>Visitantes</title></head>
 <body>
-    <div th:fragment="content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold">Visitantes</h2>
-            <a href="/visitantes/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Novo Visitante</a>
-        </div>
-        <div class="bg-white shadow-md rounded overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left">Nome</th>
-                        <th class="px-6 py-3 text-left">Unidade</th>
-                        <th class="px-6 py-3 text-left">Tipo</th>
-                        <th class="px-6 py-3 text-left">Autorizado Por</th>
-                        <th class="px-6 py-3 text-left">Ativo</th>
-                        <th class="px-6 py-3 text-left">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="visitante : ${visitantes}" class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4" th:text="${visitante.nome}"></td>
-                        <td class="px-6 py-4" th:text="${visitante.unidade.identificacao}"></td>
-                        <td class="px-6 py-4" th:text="${visitante.tipoVisitante}"></td>
-                        <td class="px-6 py-4" th:text="${visitante.autorizadoPor != null} ? ${visitante.autorizadoPor.nome} : '-'"></td>
-                        <td class="px-6 py-4" th:text="${visitante.ativo}"></td>
-                        <td class="px-6 py-4">
-                            <a th:href="@{/visitantes/edit/{id}(id=${visitante.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
-                            <a th:href="@{/visitantes/delete/{id}(id=${visitante.id})}" class="text-red-600 hover:underline" 
-                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div th:fragment="content">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Visitantes</h1>
+    <a th:href="@{/visitantes/new}" class="btn-primary">+ Novo Visitante</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(visitantes)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <p class="text-sm">Nenhum visitante cadastrado</p>
     </div>
+    <div th:unless="${#lists.isEmpty(visitantes)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Nome</th>
+            <th class="table-th">Documento</th>
+            <th class="table-th">Telefone</th>
+            <th class="table-th">Tipo</th>
+            <th class="table-th">Unidade</th>
+            <th class="table-th">Autorizado Por</th>
+            <th class="table-th">Ativo</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="visitante : ${visitantes}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${visitante.nome}"></td>
+            <td class="table-td" th:text="${visitante.documento}"></td>
+            <td class="table-td" th:text="${visitante.telefone}"></td>
+            <td class="table-td">
+              <span th:text="${visitante.tipoVisitante}"
+                    th:class="${visitante.tipoVisitante?.name() == 'VISITA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700' :
+                              (${visitante.tipoVisitante?.name() == 'PRESTADOR'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-100 text-teal-700')">
+              </span>
+            </td>
+            <td class="table-td" th:text="${visitante.unidade?.identificacao}"></td>
+            <td class="table-td" th:text="${visitante.autorizadoPor != null} ? ${visitante.autorizadoPor.nome} : '-'"></td>
+            <td class="table-td">
+              <span th:text="${visitante.ativo}"
+                    th:class="${visitante.ativo?.name() == 'SIM'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600'">
+              </span>
+            </td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/visitantes/edit/{id}(id=${visitante.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/visitantes/delete/{id}(id=${visitante.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

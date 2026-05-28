@@ -24,12 +24,16 @@ public class VisitanteController {
 
     @GetMapping
     public String list(Model model) {
+        model.addAttribute("activePage", "visitantes");
+        model.addAttribute("title", "Visitantes");
         model.addAttribute("visitantes", service.findAll());
         return "visitantes/list";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
+        model.addAttribute("activePage", "visitantes");
+        model.addAttribute("title", "Novo Visitante");
         model.addAttribute("visitante", new Visitante());
         model.addAttribute("unidades", unidadeService.findAll());
         model.addAttribute("moradores", moradorService.findAll());
@@ -38,6 +42,8 @@ public class VisitanteController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("activePage", "visitantes");
+        model.addAttribute("title", "Editar Visitante");
         model.addAttribute("visitante", service.findById(id));
         model.addAttribute("unidades", unidadeService.findAll());
         model.addAttribute("moradores", moradorService.findAll());

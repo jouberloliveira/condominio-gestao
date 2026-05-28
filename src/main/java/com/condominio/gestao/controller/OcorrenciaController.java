@@ -24,12 +24,16 @@ public class OcorrenciaController {
 
     @GetMapping
     public String list(Model model) {
+        model.addAttribute("activePage", "ocorrencias");
+        model.addAttribute("title", "Ocorrências");
         model.addAttribute("ocorrencias", service.findAll());
         return "ocorrencias/list";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
+        model.addAttribute("activePage", "ocorrencias");
+        model.addAttribute("title", "Nova Ocorrência");
         model.addAttribute("ocorrencia", new Ocorrencia());
         model.addAttribute("unidades", unidadeService.findAll());
         model.addAttribute("moradores", moradorService.findAll());
@@ -38,6 +42,8 @@ public class OcorrenciaController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("activePage", "ocorrencias");
+        model.addAttribute("title", "Editar Ocorrência");
         model.addAttribute("ocorrencia", service.findById(id));
         model.addAttribute("unidades", unidadeService.findAll());
         model.addAttribute("moradores", moradorService.findAll());

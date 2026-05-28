@@ -1,72 +1,86 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
 <head><title>Visitante</title></head>
 <body>
-    <div th:fragment="content">
-        <h2 class="text-3xl font-bold mb-6" th:text="${visitante.id == null} ? 'Novo Visitante' : 'Editar Visitante'">Visitante</h2>
-        <div class="bg-white shadow-md rounded p-6">
-            <form th:action="@{/visitantes}" th:object="${visitante}" method="post">
-                <input type="hidden" th:field="*{id}">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Unidade *</label>
-                    <select th:field="*{unidade}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.identificacao}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Nome *</label>
-                    <input type="text" th:field="*{nome}" class="w-full border rounded px-3 py-2" required>
-                    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="text-red-600 text-sm"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Documento</label>
-                    <input type="text" th:field="*{documento}" class="w-full border rounded px-3 py-2">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Telefone</label>
-                    <input type="text" th:field="*{telefone}" class="w-full border rounded px-3 py-2" maxlength="15"
-                           placeholder="(00) 00000-0000" oninput="maskTelefone(this)">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Tipo Visitante *</label>
-                    <select th:field="*{tipoVisitante}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="t : ${T(com.condominio.gestao.enums.TipoVisitante).values()}"
-                                th:value="${t}" th:text="${t}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Autorizado Por</label>
-                    <select th:field="*{autorizadoPor}" class="w-full border rounded px-3 py-2">
-                        <option value="">Nenhum</option>
-                        <option th:each="m : ${moradores}" th:value="${m.id}" th:text="${m.nome + ' - ' + m.unidade.identificacao}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Ativo *</label>
-                    <select th:field="*{ativo}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="a : ${T(com.condominio.gestao.enums.SimNao).values()}"
-                                th:value="${a}" th:text="${a}"></option>
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
-                    <a href="/visitantes" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancelar</a>
-                </div>
-            </form>
+<div th:fragment="content">
+
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800" th:text="${visitante.id == null} ? 'Novo Visitante' : 'Editar Visitante'">Visitante</h1>
+  </div>
+
+  <div class="card p-6 max-w-2xl">
+    <form th:action="@{/visitantes}" th:object="${visitante}" method="post" class="space-y-5">
+      <input type="hidden" th:field="*{id}">
+
+      <div>
+        <label class="form-label">Unidade <span class="text-red-500">*</span></label>
+        <select th:field="*{unidade}" class="form-input" required>
+          <option value="">Selecione...</option>
+          <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.identificacao}"></option>
+        </select>
+        <span th:if="${#fields.hasErrors('unidade')}" th:errors="*{unidade}" class="text-red-600 text-xs mt-1 block"></span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div>
+          <label class="form-label">Nome <span class="text-red-500">*</span></label>
+          <input type="text" th:field="*{nome}" class="form-input" required placeholder="Nome completo">
+          <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="text-red-600 text-xs mt-1 block"></span>
         </div>
-    </div>
-    <script>
-        function maskTelefone(input) {
-            let v = input.value.replace(/\D/g, '').slice(0, 11);
-            if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-            else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-            else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-            else if (v.length > 0) v = v.replace(/^(\d{0,2})/, '($1');
-            input.value = v;
-        }
-    </script>
+        <div>
+          <label class="form-label">Documento</label>
+          <input type="text" th:field="*{documento}" class="form-input" placeholder="RG, CPF ou outro">
+        </div>
+        <div>
+          <label class="form-label">Telefone</label>
+          <input type="text" th:field="*{telefone}" class="form-input" maxlength="15"
+                 placeholder="(00) 00000-0000" oninput="maskTelefone(this)">
+        </div>
+        <div>
+          <label class="form-label">Tipo de Visitante <span class="text-red-500">*</span></label>
+          <select th:field="*{tipoVisitante}" class="form-input" required>
+            <option value="">Selecione...</option>
+            <option th:each="t : ${T(com.condominio.gestao.enums.TipoVisitante).values()}"
+                    th:value="${t}" th:text="${t}"></option>
+          </select>
+          <span th:if="${#fields.hasErrors('tipoVisitante')}" th:errors="*{tipoVisitante}" class="text-red-600 text-xs mt-1 block"></span>
+        </div>
+        <div>
+          <label class="form-label">Autorizado Por</label>
+          <select th:field="*{autorizadoPor}" class="form-input">
+            <option value="">Nenhum</option>
+            <option th:each="m : ${moradores}" th:value="${m.id}" th:text="${m.nome + ' - ' + m.unidade?.identificacao}"></option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Ativo <span class="text-red-500">*</span></label>
+          <select th:field="*{ativo}" class="form-input" required>
+            <option value="">Selecione...</option>
+            <option th:each="a : ${T(com.condominio.gestao.enums.SimNao).values()}"
+                    th:value="${a}" th:text="${a}"></option>
+          </select>
+          <span th:if="${#fields.hasErrors('ativo')}" th:errors="*{ativo}" class="text-red-600 text-xs mt-1 block"></span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="submit" class="btn-primary">Salvar</button>
+        <a th:href="@{/visitantes}" class="btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function maskTelefone(input) {
+      let v = input.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+      else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+      else if (v.length > 0) v = v.replace(/^(\d{0,2})/, '($1');
+      input.value = v;
+    }
+  </script>
+
+</div>
 </body>
 </html>

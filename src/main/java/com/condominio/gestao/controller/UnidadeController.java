@@ -20,18 +20,24 @@ public class UnidadeController {
 
     @GetMapping
     public String list(Model model) {
+        model.addAttribute("activePage", "unidades");
+        model.addAttribute("title", "Unidades");
         model.addAttribute("unidades", service.findAll());
         return "unidades/list";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
+        model.addAttribute("activePage", "unidades");
+        model.addAttribute("title", "Nova Unidade");
         model.addAttribute("unidade", new Unidade());
         return "unidades/form";
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("activePage", "unidades");
+        model.addAttribute("title", "Editar Unidade");
         model.addAttribute("unidade", service.findById(id));
         return "unidades/form";
     }

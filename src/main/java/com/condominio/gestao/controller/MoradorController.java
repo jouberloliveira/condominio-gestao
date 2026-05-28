@@ -22,12 +22,16 @@ public class MoradorController {
 
     @GetMapping
     public String list(Model model) {
+        model.addAttribute("activePage", "moradores");
+        model.addAttribute("title", "Moradores");
         model.addAttribute("moradores", service.findAll());
         return "moradores/list";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
+        model.addAttribute("activePage", "moradores");
+        model.addAttribute("title", "Novo Morador");
         model.addAttribute("morador", new Morador());
         model.addAttribute("unidades", unidadeService.findAll());
         return "moradores/form";
@@ -35,6 +39,8 @@ public class MoradorController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("activePage", "moradores");
+        model.addAttribute("title", "Editar Morador");
         model.addAttribute("morador", service.findById(id));
         model.addAttribute("unidades", unidadeService.findAll());
         return "moradores/form";
@@ -44,6 +50,8 @@ public class MoradorController {
     public String save(@Valid @ModelAttribute Morador morador, BindingResult result,
                       Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            model.addAttribute("activePage", "moradores");
+            model.addAttribute("title", morador.getId() == null ? "Novo Morador" : "Editar Morador");
             model.addAttribute("unidades", unidadeService.findAll());
             return "moradores/form";
         }

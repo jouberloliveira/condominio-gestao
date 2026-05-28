@@ -24,12 +24,16 @@ public class ReservaController {
 
     @GetMapping
     public String list(Model model) {
+        model.addAttribute("activePage", "reservas");
+        model.addAttribute("title", "Reservas");
         model.addAttribute("reservas", service.findAll());
         return "reservas/list";
     }
 
     @GetMapping("/new")
     public String newForm(Model model) {
+        model.addAttribute("activePage", "reservas");
+        model.addAttribute("title", "Nova Reserva");
         model.addAttribute("reserva", new Reserva());
         model.addAttribute("unidades", unidadeService.findAll());
         model.addAttribute("moradores", moradorService.findAll());
@@ -38,6 +42,8 @@ public class ReservaController {
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("activePage", "reservas");
+        model.addAttribute("title", "Editar Reserva");
         model.addAttribute("reserva", service.findById(id));
         model.addAttribute("unidades", unidadeService.findAll());
         model.addAttribute("moradores", moradorService.findAll());

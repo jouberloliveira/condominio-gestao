@@ -1,42 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
 <head><title>Unidades</title></head>
 <body>
-    <div th:fragment="content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold">Unidades</h2>
-            <a href="/unidades/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Nova Unidade</a>
-        </div>
-        <div class="bg-white shadow-md rounded overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left">Identificação</th>
-                        <th class="px-6 py-3 text-left">Bloco</th>
-                        <th class="px-6 py-3 text-left">Número</th>
-                        <th class="px-6 py-3 text-left">Andar</th>
-                        <th class="px-6 py-3 text-left">Vaga Garagem</th>
-                        <th class="px-6 py-3 text-left">Situação</th>
-                        <th class="px-6 py-3 text-left">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="unidade : ${unidades}" class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4" th:text="${unidade.identificacao}"></td>
-                        <td class="px-6 py-4" th:text="${unidade.bloco}"></td>
-                        <td class="px-6 py-4" th:text="${unidade.numero}"></td>
-                        <td class="px-6 py-4" th:text="${unidade.andar}"></td>
-                        <td class="px-6 py-4" th:text="${unidade.vaga}"></td>
-                        <td class="px-6 py-4" th:text="${unidade.situacao}"></td>
-                        <td class="px-6 py-4">
-                            <a th:href="@{/unidades/edit/{id}(id=${unidade.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
-                            <a th:href="@{/unidades/delete/{id}(id=${unidade.id})}" class="text-red-600 hover:underline" 
-                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div th:fragment="content">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Unidades</h1>
+    <a th:href="@{/unidades/new}" class="btn-primary">+ Nova Unidade</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(unidades)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <p class="text-sm">Nenhuma unidade cadastrada</p>
     </div>
+    <div th:unless="${#lists.isEmpty(unidades)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Identificação</th>
+            <th class="table-th">Bloco</th>
+            <th class="table-th">Número</th>
+            <th class="table-th">Andar</th>
+            <th class="table-th">Vaga Garagem</th>
+            <th class="table-th">Situação</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="unidade : ${unidades}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${unidade.identificacao}"></td>
+            <td class="table-td" th:text="${unidade.bloco}"></td>
+            <td class="table-td" th:text="${unidade.numero}"></td>
+            <td class="table-td" th:text="${unidade.andar}"></td>
+            <td class="table-td" th:text="${unidade.vaga}"></td>
+            <td class="table-td">
+              <span th:text="${unidade.situacao}"
+                    th:class="${unidade.situacao?.name() == 'OCUPADA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              (${unidade.situacao?.name() == 'EM_REFORMA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600')">
+              </span>
+            </td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/unidades/edit/{id}(id=${unidade.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/unidades/delete/{id}(id=${unidade.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

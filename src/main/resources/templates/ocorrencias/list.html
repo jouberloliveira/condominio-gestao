@@ -1,40 +1,69 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout}">
-<head><title>Ocorrências</title></head>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<head><title>Ocorrencias</title></head>
 <body>
-    <div th:fragment="content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold">Ocorrências</h2>
-            <a href="/ocorrencias/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Nova Ocorrência</a>
-        </div>
-        <div class="bg-white shadow-md rounded overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-6 py-3 text-left">Título</th>
-                        <th class="px-6 py-3 text-left">Tipo</th>
-                        <th class="px-6 py-3 text-left">Prioridade</th>
-                        <th class="px-6 py-3 text-left">Status</th>
-                        <th class="px-6 py-3 text-left">Data Abertura</th>
-                        <th class="px-6 py-3 text-left">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="ocorrencia : ${ocorrencias}" class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4" th:text="${ocorrencia.titulo}"></td>
-                        <td class="px-6 py-4" th:text="${ocorrencia.tipo}"></td>
-                        <td class="px-6 py-4" th:text="${ocorrencia.prioridade}"></td>
-                        <td class="px-6 py-4" th:text="${ocorrencia.status}"></td>
-                        <td class="px-6 py-4" th:text="${#temporals.format(ocorrencia.dataHoraAbertura, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td class="px-6 py-4">
-                            <a th:href="@{/ocorrencias/edit/{id}(id=${ocorrencia.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
-                            <a th:href="@{/ocorrencias/delete/{id}(id=${ocorrencia.id})}" class="text-red-600 hover:underline" 
-                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<div th:fragment="content">
+
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Ocorrências</h1>
+    <a th:href="@{/ocorrencias/new}" class="btn-primary">+ Nova Ocorrência</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(ocorrencias)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      <p class="text-sm">Nenhuma ocorrência cadastrada</p>
     </div>
+    <div th:unless="${#lists.isEmpty(ocorrencias)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Título</th>
+            <th class="table-th">Tipo</th>
+            <th class="table-th">Prioridade</th>
+            <th class="table-th">Status</th>
+            <th class="table-th">Aberto Por</th>
+            <th class="table-th">Unidade</th>
+            <th class="table-th">Data Abertura</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="ocorrencia : ${ocorrencias}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${ocorrencia.titulo}"></td>
+            <td class="table-td" th:text="${ocorrencia.tipo}"></td>
+            <td class="table-td">
+              <span th:text="${ocorrencia.prioridade}"
+                    th:class="${ocorrencia.prioridade?.name() == 'CRITICA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700' :
+                              (${ocorrencia.prioridade?.name() == 'ALTA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700' :
+                              (${ocorrencia.prioridade?.name() == 'MEDIA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700'))">
+              </span>
+            </td>
+            <td class="table-td">
+              <span th:text="${ocorrencia.status}"
+                    th:class="${ocorrencia.status?.name() == 'ABERTA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700' :
+                              (${ocorrencia.status?.name() == 'EM_ANDAMENTO'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              (${ocorrencia.status?.name() == 'RESOLVIDA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600'))">
+              </span>
+            </td>
+            <td class="table-td" th:text="${ocorrencia.abertoPor?.nome ?: '-'}"></td>
+            <td class="table-td" th:text="${ocorrencia.unidade?.identificacao ?: '-'}"></td>
+            <td class="table-td" th:text="${#temporals.format(ocorrencia.dataHoraAbertura, 'dd/MM/yyyy HH:mm')}"></td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/ocorrencias/edit/{id}(id=${ocorrencia.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/ocorrencias/delete/{id}(id=${ocorrencia.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>
