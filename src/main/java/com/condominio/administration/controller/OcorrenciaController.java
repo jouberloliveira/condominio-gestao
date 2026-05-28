@@ -16,9 +16,9 @@ public class OcorrenciaController {
     private final OcorrenciaService service;
     private final UnidadeService unidadeService;
     private final MoradorService moradorService;
-    @GetMapping public String list(Model m) { m.addAttribute("ocorrencias", service.findAll()); return "ocorrencias/list"; }
-    @GetMapping("/new") public String newForm(Model m) { m.addAttribute("ocorrencia", new Ocorrencia()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); return "ocorrencias/form"; }
-    @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("ocorrencia", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); return "ocorrencias/form"; }
+    @GetMapping public String list(Model m) { m.addAttribute("ocorrencias", service.findAll()); m.addAttribute("currentPage","ocorrencias"); m.addAttribute("title","Ocorrências"); return "ocorrencias/list"; }
+    @GetMapping("/new") public String newForm(Model m) { m.addAttribute("ocorrencia", new Ocorrencia()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","ocorrencias"); m.addAttribute("title","Nova Ocorrência"); return "ocorrencias/form"; }
+    @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("ocorrencia", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","ocorrencias"); m.addAttribute("title","Editar Ocorrência"); return "ocorrencias/form"; }
     @PostMapping
     public String save(@Valid @ModelAttribute Ocorrencia o, BindingResult r, Model m, RedirectAttributes ra) {
         if (r.hasErrors()) { m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); return "ocorrencias/form"; }
