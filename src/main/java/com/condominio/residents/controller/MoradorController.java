@@ -4,16 +4,18 @@ import com.condominio.common.exception.BusinessException;
 import com.condominio.residents.model.Morador;
 import com.condominio.residents.service.MoradorService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-@Controller @RequestMapping("/moradores") @RequiredArgsConstructor
+@Controller @RequestMapping("/moradores")
 public class MoradorController {
-    private final MoradorService service;
-    private final UnidadeService unidadeService;
+    @Autowired
+    private MoradorService service;
+    @Autowired
+    private UnidadeService unidadeService;
     @GetMapping public String list(Model m) { m.addAttribute("moradores", service.findAll()); m.addAttribute("currentPage","moradores"); m.addAttribute("title","Moradores"); return "moradores/list"; }
     @GetMapping("/new") public String newForm(Model m) { m.addAttribute("morador", new Morador()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("currentPage","moradores"); m.addAttribute("title","Novo Morador"); return "moradores/form"; }
     @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("morador", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("currentPage","moradores"); m.addAttribute("title","Editar Morador"); return "moradores/form"; }

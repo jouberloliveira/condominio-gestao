@@ -4,14 +4,16 @@ import com.condominio.access.repository.VisitanteRepository;
 import com.condominio.common.exception.BusinessException;
 import com.condominio.residents.model.Morador;
 import com.condominio.residents.repository.MoradorRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-@Service @RequiredArgsConstructor
+@Service
 public class VisitanteService {
-    private final VisitanteRepository repository;
-    private final MoradorRepository moradorRepository;
+    @Autowired
+    private VisitanteRepository repository;
+    @Autowired
+    private MoradorRepository moradorRepository;
     public List<Visitante> findAll() { return repository.findAll(); }
     public Visitante findById(Long id) { return repository.findById(id).orElseThrow(() -> new BusinessException("Visitante não encontrado")); }
     @Transactional

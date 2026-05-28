@@ -3,10 +3,8 @@ import com.condominio.administration.enums.*;
 import com.condominio.residents.model.Morador;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
-@Entity @Table(name = "ocorrencias") @Data @NoArgsConstructor
+@Entity @Table(name = "ocorrencias")
 public class Ocorrencia {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "unidade_id") private Unidade unidade;
@@ -18,4 +16,36 @@ public class Ocorrencia {
     @NotBlank(message = "Descrição é obrigatória") @Column(columnDefinition = "TEXT", nullable = false) private String descricao;
     @Column(nullable = false) private LocalDateTime dataHoraAbertura = LocalDateTime.now();
     private LocalDateTime dataHoraFechamento;
+
+    public Ocorrencia() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Unidade getUnidade() { return unidade; }
+    public void setUnidade(Unidade unidade) { this.unidade = unidade; }
+
+    public Morador getAbertoPor() { return abertoPor; }
+    public void setAbertoPor(Morador abertoPor) { this.abertoPor = abertoPor; }
+
+    public TipoOcorrencia getTipo() { return tipo; }
+    public void setTipo(TipoOcorrencia tipo) { this.tipo = tipo; }
+
+    public PrioridadeOcorrencia getPrioridade() { return prioridade; }
+    public void setPrioridade(PrioridadeOcorrencia prioridade) { this.prioridade = prioridade; }
+
+    public StatusOcorrencia getStatus() { return status; }
+    public void setStatus(StatusOcorrencia status) { this.status = status; }
+
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+
+    public LocalDateTime getDataHoraAbertura() { return dataHoraAbertura; }
+    public void setDataHoraAbertura(LocalDateTime dataHoraAbertura) { this.dataHoraAbertura = dataHoraAbertura; }
+
+    public LocalDateTime getDataHoraFechamento() { return dataHoraFechamento; }
+    public void setDataHoraFechamento(LocalDateTime dataHoraFechamento) { this.dataHoraFechamento = dataHoraFechamento; }
 }

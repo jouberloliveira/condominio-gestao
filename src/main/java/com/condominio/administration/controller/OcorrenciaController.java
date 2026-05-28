@@ -5,17 +5,20 @@ import com.condominio.administration.service.UnidadeService;
 import com.condominio.common.exception.BusinessException;
 import com.condominio.residents.service.MoradorService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-@Controller @RequestMapping("/ocorrencias") @RequiredArgsConstructor
+@Controller @RequestMapping("/ocorrencias")
 public class OcorrenciaController {
-    private final OcorrenciaService service;
-    private final UnidadeService unidadeService;
-    private final MoradorService moradorService;
+    @Autowired
+    private OcorrenciaService service;
+    @Autowired
+    private UnidadeService unidadeService;
+    @Autowired
+    private MoradorService moradorService;
     @GetMapping public String list(Model m) { m.addAttribute("ocorrencias", service.findAll()); m.addAttribute("currentPage","ocorrencias"); m.addAttribute("title","Ocorrências"); return "ocorrencias/list"; }
     @GetMapping("/new") public String newForm(Model m) { m.addAttribute("ocorrencia", new Ocorrencia()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","ocorrencias"); m.addAttribute("title","Nova Ocorrência"); return "ocorrencias/form"; }
     @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("ocorrencia", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","ocorrencias"); m.addAttribute("title","Editar Ocorrência"); return "ocorrencias/form"; }

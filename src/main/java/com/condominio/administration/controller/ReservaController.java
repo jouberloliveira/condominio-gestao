@@ -5,17 +5,20 @@ import com.condominio.administration.service.UnidadeService;
 import com.condominio.common.exception.BusinessException;
 import com.condominio.residents.service.MoradorService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-@Controller @RequestMapping("/reservas") @RequiredArgsConstructor
+@Controller @RequestMapping("/reservas")
 public class ReservaController {
-    private final ReservaService service;
-    private final UnidadeService unidadeService;
-    private final MoradorService moradorService;
+    @Autowired
+    private ReservaService service;
+    @Autowired
+    private UnidadeService unidadeService;
+    @Autowired
+    private MoradorService moradorService;
     @GetMapping public String list(Model m) { m.addAttribute("reservas", service.findAll()); m.addAttribute("currentPage","reservas"); m.addAttribute("title","Reservas"); return "reservas/list"; }
     @GetMapping("/new") public String newForm(Model m) { m.addAttribute("reserva", new Reserva()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","reservas"); m.addAttribute("title","Nova Reserva"); return "reservas/form"; }
     @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("reserva", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","reservas"); m.addAttribute("title","Editar Reserva"); return "reservas/form"; }
