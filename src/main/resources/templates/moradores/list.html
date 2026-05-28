@@ -1,114 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout(~{::content})}"
-      lang="pt-BR">
-<th:block th:fragment="content">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<head><title>Moradores</title></head>
+<body>
+<div th:fragment="content">
 
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-            <h2 class="text-xl font-bold text-gray-800">Moradores</h2>
-            <p class="text-sm text-gray-500 mt-0.5">Lista de todos os moradores cadastrados</p>
-        </div>
-        <a th:href="@{/moradores/new}"
-           sec:authorize="hasRole('ADMIN')"
-           class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Novo Morador
-        </a>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Moradores</h1>
+    <a th:href="@{/moradores/new}" class="btn-primary">+ Novo Morador</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(moradores)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <p class="text-sm">Nenhum morador cadastrado</p>
     </div>
-
-    <div class="mb-4">
-        <div class="relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input id="search" type="text" placeholder="Buscar por nome, CPF ou unidade..."
-                   oninput="filterTable()"
-                   class="w-full sm:w-80 pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
-        </div>
+    <div th:unless="${#lists.isEmpty(moradores)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Nome</th>
+            <th class="table-th">CPF</th>
+            <th class="table-th">Email</th>
+            <th class="table-th">Telefone</th>
+            <th class="table-th">Unidade</th>
+            <th class="table-th">Tipo</th>
+            <th class="table-th">Responsável</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="morador : ${moradores}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${morador.nome}"></td>
+            <td class="table-td" th:text="${morador.cpf}"></td>
+            <td class="table-td" th:text="${morador.email}"></td>
+            <td class="table-td" th:text="${morador.telefone}"></td>
+            <td class="table-td" th:text="${morador.unidade?.identificacao}"></td>
+            <td class="table-td">
+              <span th:text="${morador.tipoMorador}"
+                    th:class="${morador.tipoMorador?.name() == 'PROPRIETARIO'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700' :
+                              (${morador.tipoMorador?.name() == 'INQUILINO'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600')">
+              </span>
+            </td>
+            <td class="table-td">
+              <span th:text="${morador.responsavelUnidade}"
+                    th:class="${morador.responsavelUnidade?.name() == 'SIM'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600'">
+              </span>
+            </td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/moradores/edit/{id}(id=${morador.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/moradores/delete/{id}(id=${morador.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100" id="moradores-table">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">CPF</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Unidade</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipo</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Responsável</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <tr th:if="${#lists.isEmpty(moradores)}">
-                        <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-400">
-                            Nenhum morador cadastrado.
-                        </td>
-                    </tr>
-                    <tr th:each="morador : ${moradores}" class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-700 flex-shrink-0"
-                                     th:text="${#strings.substring(morador.nome, 0, 1).toUpperCase()}">M</div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-800" th:text="${morador.nome}">Nome</p>
-                                    <p class="text-xs text-gray-400" th:text="${morador.email} ?: ''">—</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600" th:text="${morador.cpf}">—</td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
-                                  th:text="${morador.unidade?.identificacao} ?: '—'">—</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span th:class="${morador.tipoMorador?.name() == 'PROPRIETARIO'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800' : 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'"
-                                  th:text="${morador.tipoMorador}">—</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span th:if="${morador.responsavelUnidade?.name() == 'SIM'}"
-                                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                Sim
-                            </span>
-                            <span th:unless="${morador.responsavelUnidade?.name() == 'SIM'}"
-                                  class="text-sm text-gray-400">Não</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a th:href="@{/moradores/{id}/edit(id=${morador.id})}"
-                                   sec:authorize="hasRole('ADMIN')"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                                    Editar
-                                </a>
-                                <a th:href="@{/moradores/{id}/delete(id=${morador.id})}"
-                                   sec:authorize="hasRole('ADMIN')"
-                                   onclick="return confirm('Deseja excluir este morador?')"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
-                                    Excluir
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-500"
-             th:text="${#lists.size(moradores)} + ' morador(es) cadastrado(s)'"></div>
-    </div>
-
-    <script>
-        function filterTable() {
-            const q = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('#moradores-table tbody tr[class]').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-            });
-        }
-    </script>
-
-</th:block>
+</div>
+</body>
 </html>

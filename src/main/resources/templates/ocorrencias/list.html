@@ -1,128 +1,69 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout(~{::content})}"
-      lang="pt-BR">
-<th:block th:fragment="content">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<head><title>Ocorrencias</title></head>
+<body>
+<div th:fragment="content">
 
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-            <h2 class="text-xl font-bold text-gray-800">Ocorrências / Chamados</h2>
-            <p class="text-sm text-gray-500 mt-0.5">Acompanhe e gerencie chamados de manutenção e ocorrências</p>
-        </div>
-        <a th:href="@{/ocorrencias/new}"
-           class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Nova Ocorrência
-        </a>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Ocorrências</h1>
+    <a th:href="@{/ocorrencias/new}" class="btn-primary">+ Nova Ocorrência</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(ocorrencias)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      <p class="text-sm">Nenhuma ocorrência cadastrada</p>
     </div>
-
-    <!-- Filters -->
-    <div class="flex flex-wrap gap-3 mb-4">
-        <input id="search" type="text" placeholder="Buscar por título..."
-               oninput="filterTable()"
-               class="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
-        <select id="filterStatus" onchange="filterTable()"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="">Todos os status</option>
-            <option value="ABERTA">Aberta</option>
-            <option value="EM_ANDAMENTO">Em Andamento</option>
-            <option value="RESOLVIDA">Resolvida</option>
-            <option value="CANCELADA">Cancelada</option>
-        </select>
-        <select id="filterPrioridade" onchange="filterTable()"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="">Todas as prioridades</option>
-            <option value="CRITICA">Crítica</option>
-            <option value="ALTA">Alta</option>
-            <option value="MEDIA">Média</option>
-            <option value="BAIXA">Baixa</option>
-        </select>
+    <div th:unless="${#lists.isEmpty(ocorrencias)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Título</th>
+            <th class="table-th">Tipo</th>
+            <th class="table-th">Prioridade</th>
+            <th class="table-th">Status</th>
+            <th class="table-th">Aberto Por</th>
+            <th class="table-th">Unidade</th>
+            <th class="table-th">Data Abertura</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="ocorrencia : ${ocorrencias}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${ocorrencia.titulo}"></td>
+            <td class="table-td" th:text="${ocorrencia.tipo}"></td>
+            <td class="table-td">
+              <span th:text="${ocorrencia.prioridade}"
+                    th:class="${ocorrencia.prioridade?.name() == 'CRITICA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700' :
+                              (${ocorrencia.prioridade?.name() == 'ALTA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700' :
+                              (${ocorrencia.prioridade?.name() == 'MEDIA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700'))">
+              </span>
+            </td>
+            <td class="table-td">
+              <span th:text="${ocorrencia.status}"
+                    th:class="${ocorrencia.status?.name() == 'ABERTA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700' :
+                              (${ocorrencia.status?.name() == 'EM_ANDAMENTO'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              (${ocorrencia.status?.name() == 'RESOLVIDA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600'))">
+              </span>
+            </td>
+            <td class="table-td" th:text="${ocorrencia.abertoPor?.nome ?: '-'}"></td>
+            <td class="table-td" th:text="${ocorrencia.unidade?.identificacao ?: '-'}"></td>
+            <td class="table-td" th:text="${#temporals.format(ocorrencia.dataHoraAbertura, 'dd/MM/yyyy HH:mm')}"></td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/ocorrencias/edit/{id}(id=${ocorrencia.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/ocorrencias/delete/{id}(id=${ocorrencia.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100" id="ocorrencias-table">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Título</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipo</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Prioridade</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Abertura</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <tr th:if="${#lists.isEmpty(ocorrencias)}">
-                        <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-400">
-                            Nenhuma ocorrência registrada.
-                        </td>
-                    </tr>
-                    <tr th:each="ocorrencia : ${ocorrencias}" class="hover:bg-gray-50 transition-colors"
-                        th:attr="data-status=${ocorrencia.status},data-prioridade=${ocorrencia.prioridade}">
-                        <td class="px-6 py-4">
-                            <p class="text-sm font-medium text-gray-800" th:text="${ocorrencia.titulo}">—</p>
-                            <p class="text-xs text-gray-400 mt-0.5"
-                               th:text="${ocorrencia.unidade != null} ? 'Unidade: ' + ${ocorrencia.unidade.identificacao} : ''">—</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
-                                  th:text="${ocorrencia.tipo}">—</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span th:class="${ocorrencia.prioridade?.name() == 'CRITICA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800' :
-                                            (${ocorrencia.prioridade?.name() == 'ALTA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800' :
-                                            (${ocorrencia.prioridade?.name() == 'MEDIA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800' :
-                                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'))"
-                                  th:text="${ocorrencia.prioridade}">—</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span th:class="${ocorrencia.status?.name() == 'ABERTA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800' :
-                                            (${ocorrencia.status?.name() == 'EM_ANDAMENTO'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800' :
-                                            (${ocorrencia.status?.name() == 'RESOLVIDA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800' :
-                                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500'))"
-                                  th:text="${ocorrencia.status}">—</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500"
-                            th:text="${#temporals.format(ocorrencia.dataHoraAbertura, 'dd/MM/yyyy HH:mm')}">—</td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a th:href="@{/ocorrencias/{id}/edit(id=${ocorrencia.id})}"
-                                   class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                                    Editar
-                                </a>
-                                <a th:href="@{/ocorrencias/{id}/delete(id=${ocorrencia.id})}"
-                                   sec:authorize="hasRole('ADMIN')"
-                                   onclick="return confirm('Deseja excluir esta ocorrência?')"
-                                   class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
-                                    Excluir
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-500"
-             th:text="${#lists.size(ocorrencias)} + ' ocorrência(s) registrada(s)'"></div>
-    </div>
-
-    <script>
-        function filterTable() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const status = document.getElementById('filterStatus').value;
-            const prioridade = document.getElementById('filterPrioridade').value;
-            document.querySelectorAll('#ocorrencias-table tbody tr[class]').forEach(row => {
-                const matchText = row.textContent.toLowerCase().includes(q);
-                const matchStatus = !status || row.dataset.status === status;
-                const matchPrioridade = !prioridade || row.dataset.prioridade === prioridade;
-                row.style.display = (matchText && matchStatus && matchPrioridade) ? '' : 'none';
-            });
-        }
-    </script>
-
-</th:block>
+</div>
+</body>
 </html>

@@ -1,94 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout :: layout(~{::content})}"
-      lang="pt-BR">
-<th:block th:fragment="content">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
+<head><title>Unidades</title></head>
+<body>
+<div th:fragment="content">
 
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-            <h2 class="text-xl font-bold text-gray-800">Unidades</h2>
-            <p class="text-sm text-gray-500 mt-0.5">Gestão de unidades do condomínio</p>
-        </div>
-        <a th:href="@{/unidades/new}"
-           sec:authorize="hasRole('ADMIN')"
-           class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Nova Unidade
-        </a>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Unidades</h1>
+    <a th:href="@{/unidades/new}" class="btn-primary">+ Nova Unidade</a>
+  </div>
+
+  <div class="card p-0 overflow-hidden">
+    <div th:if="${#lists.isEmpty(unidades)}" class="text-center py-16 text-gray-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <p class="text-sm">Nenhuma unidade cadastrada</p>
     </div>
-
-    <div class="mb-4">
-        <input id="search" type="text" placeholder="Buscar por identificação, bloco ou número..."
-               oninput="filterTable()"
-               class="w-full sm:w-80 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+    <div th:unless="${#lists.isEmpty(unidades)}" class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="table-th">Identificação</th>
+            <th class="table-th">Bloco</th>
+            <th class="table-th">Número</th>
+            <th class="table-th">Andar</th>
+            <th class="table-th">Vaga Garagem</th>
+            <th class="table-th">Situação</th>
+            <th class="table-th">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr th:each="unidade : ${unidades}" class="hover:bg-gray-50 transition">
+            <td class="table-td font-medium text-gray-800" th:text="${unidade.identificacao}"></td>
+            <td class="table-td" th:text="${unidade.bloco}"></td>
+            <td class="table-td" th:text="${unidade.numero}"></td>
+            <td class="table-td" th:text="${unidade.andar}"></td>
+            <td class="table-td" th:text="${unidade.vaga}"></td>
+            <td class="table-td">
+              <span th:text="${unidade.situacao}"
+                    th:class="${unidade.situacao?.name() == 'OCUPADA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700' :
+                              (${unidade.situacao?.name() == 'EM_REFORMA'} ? 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700' :
+                              'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600')">
+              </span>
+            </td>
+            <td class="table-td">
+              <div class="flex items-center gap-3">
+                <a th:href="@{/unidades/edit/{id}(id=${unidade.id})}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Editar</a>
+                <a th:href="@{/unidades/delete/{id}(id=${unidade.id})}" class="btn-danger text-xs py-1 px-2"
+                   onclick="return confirm('Confirma a exclusão?')">Excluir</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100" id="unidades-table">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Identificação</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Bloco</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Número</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Andar</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Vaga</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Situação</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <tr th:if="${#lists.isEmpty(unidades)}">
-                        <td colspan="7" class="px-6 py-12 text-center text-sm text-gray-400">
-                            Nenhuma unidade cadastrada.
-                        </td>
-                    </tr>
-                    <tr th:each="unidade : ${unidades}" class="hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4">
-                            <span class="text-sm font-semibold text-gray-800" th:text="${unidade.identificacao}">—</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600" th:text="${unidade.bloco}">—</td>
-                        <td class="px-6 py-4 text-sm text-gray-600" th:text="${unidade.numero}">—</td>
-                        <td class="px-6 py-4 text-sm text-gray-600" th:text="${unidade.andar} ?: '—'">—</td>
-                        <td class="px-6 py-4 text-sm text-gray-600" th:text="${unidade.vaga} ?: '—'">—</td>
-                        <td class="px-6 py-4">
-                            <span th:class="${unidade.situacao?.name() == 'OCUPADA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800' : (${unidade.situacao?.name() == 'VAGA'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800' : 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700')"
-                                  th:text="${unidade.situacao}">—</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a th:href="@{/unidades/{id}/edit(id=${unidade.id})}"
-                                   sec:authorize="hasRole('ADMIN')"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                                    Editar
-                                </a>
-                                <a th:href="@{/unidades/{id}/delete(id=${unidade.id})}"
-                                   sec:authorize="hasRole('ADMIN')"
-                                   onclick="return confirm('Deseja excluir esta unidade?')"
-                                   class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
-                                    Excluir
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-500"
-             th:text="${#lists.size(unidades)} + ' unidade(s) cadastrada(s)'"></div>
-    </div>
-
-    <script>
-        function filterTable() {
-            const q = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('#unidades-table tbody tr[class]').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-            });
-        }
-    </script>
-
-</th:block>
+</div>
+</body>
 </html>
