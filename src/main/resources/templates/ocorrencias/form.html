@@ -1,74 +1,131 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
-<head><title>Ocorrência</title></head>
-<body>
-    <div th:fragment="content">
-        <h2 class="text-3xl font-bold mb-6" th:text="${ocorrencia.id == null} ? 'Nova Ocorrência' : 'Editar Ocorrência'">Ocorrência</h2>
-        <div class="bg-white shadow-md rounded p-6">
-            <form th:action="@{/ocorrencias}" th:object="${ocorrencia}" method="post">
-                <input type="hidden" th:field="*{id}">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Unidade</label>
-                    <select th:field="*{unidade}" class="w-full border rounded px-3 py-2">
-                        <option value="">Nenhuma</option>
-                        <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.identificacao}"></option>
-                    </select>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}"
+      lang="pt-BR">
+<th:block th:fragment="content">
+
+    <div class="mb-6">
+        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+            <a th:href="@{/ocorrencias}" class="hover:text-blue-600">Ocorrências</a>
+            <span>/</span>
+            <span class="text-gray-800 font-medium" th:text="${ocorrencia.id == null} ? 'Nova' : 'Editar'">Nova</span>
+        </nav>
+        <h2 class="text-xl font-bold text-gray-800"
+            th:text="${ocorrencia.id == null} ? 'Nova Ocorrência' : 'Editar Ocorrência'">Ocorrência</h2>
+    </div>
+
+    <div class="max-w-2xl">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <form th:action="@{/ocorrencias}" th:object="${ocorrencia}" method="post" novalidate>
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="space-y-5">
+
+                    <div>
+                        <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1.5">Título *</label>
+                        <input id="titulo" type="text" th:field="*{titulo}"
+                               placeholder="Descreva brevemente o problema..."
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               required/>
+                        <p th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"
+                           class="mt-1 text-xs text-red-600"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div>
+                            <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1.5">Tipo *</label>
+                            <select id="tipo" th:field="*{tipo}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Tipo...</option>
+                                <option th:each="t : ${tipos}" th:value="${t}" th:text="${t}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="prioridade" class="block text-sm font-medium text-gray-700 mb-1.5">Prioridade *</label>
+                            <select id="prioridade" th:field="*{prioridade}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Prioridade...</option>
+                                <option th:each="p : ${prioridades}" th:value="${p}" th:text="${p}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1.5">Status *</label>
+                            <select id="status" th:field="*{status}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Status...</option>
+                                <option th:each="s : ${statusList}" th:value="${s}" th:text="${s}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="unidade" class="block text-sm font-medium text-gray-700 mb-1.5">Unidade</label>
+                            <select id="unidade" th:field="*{unidade}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Nenhuma</option>
+                                <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.identificacao}"
+                                        th:selected="${ocorrencia.unidade != null and ocorrencia.unidade.id == u.id}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="abertoPor" class="block text-sm font-medium text-gray-700 mb-1.5">Aberto Por</label>
+                            <select id="abertoPor" th:field="*{abertoPor}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Nenhum</option>
+                                <option th:each="m : ${moradores}" th:value="${m.id}"
+                                        th:text="${m.nome + ' (' + m.unidade?.identificacao + ')'}"
+                                        th:selected="${ocorrencia.abertoPor != null and ocorrencia.abertoPor.id == m.id}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="descricao" class="block text-sm font-medium text-gray-700 mb-1.5">Descrição *</label>
+                        <textarea id="descricao" th:field="*{descricao}" rows="4"
+                                  placeholder="Descreva detalhadamente a ocorrência..."
+                                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+                                  required></textarea>
+                        <p th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"
+                           class="mt-1 text-xs text-red-600"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="dataHoraAbertura" class="block text-sm font-medium text-gray-700 mb-1.5">Data/Hora Abertura *</label>
+                            <input id="dataHoraAbertura" type="datetime-local" th:field="*{dataHoraAbertura}"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required/>
+                        </div>
+
+                        <div>
+                            <label for="dataHoraFechamento" class="block text-sm font-medium text-gray-700 mb-1.5">Data/Hora Fechamento</label>
+                            <input id="dataHoraFechamento" type="datetime-local" th:field="*{dataHoraFechamento}"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Aberto Por</label>
-                    <select th:field="*{abertoPor}" class="w-full border rounded px-3 py-2">
-                        <option value="">Nenhum</option>
-                        <option th:each="m : ${moradores}" th:value="${m.id}" th:text="${m.nome + ' - ' + m.unidade.identificacao}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Tipo *</label>
-                    <select th:field="*{tipo}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="t : ${T(com.condominio.gestao.enums.TipoOcorrencia).values()}"
-                                th:value="${t}" th:text="${t}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Prioridade *</label>
-                    <select th:field="*{prioridade}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="p : ${T(com.condominio.gestao.enums.PrioridadeOcorrencia).values()}"
-                                th:value="${p}" th:text="${p}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Status *</label>
-                    <select th:field="*{status}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="s : ${T(com.condominio.gestao.enums.StatusOcorrencia).values()}"
-                                th:value="${s}" th:text="${s}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Título *</label>
-                    <input type="text" th:field="*{titulo}" class="w-full border rounded px-3 py-2" required>
-                    <span th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}" class="text-red-600 text-sm"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Descrição</label>
-                    <textarea th:field="*{descricao}" class="w-full border rounded px-3 py-2" rows="4"></textarea>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Data/Hora Abertura *</label>
-                    <input type="datetime-local" th:field="*{dataHoraAbertura}" class="w-full border rounded px-3 py-2" required>
-                    <span th:if="${#fields.hasErrors('dataHoraAbertura')}" th:errors="*{dataHoraAbertura}" class="text-red-600 text-sm"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Data/Hora Fechamento</label>
-                    <input type="datetime-local" th:field="*{dataHoraFechamento}" class="w-full border rounded px-3 py-2">
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
-                    <a href="/ocorrencias" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancelar</a>
+
+                <div class="flex items-center gap-3 mt-7 pt-5 border-t border-gray-100">
+                    <button type="submit"
+                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Salvar Ocorrência
+                    </button>
+                    <a th:href="@{/ocorrencias}"
+                       class="px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg border border-gray-300 transition-colors">
+                        Cancelar
+                    </a>
                 </div>
             </form>
         </div>
     </div>
-</body>
+
+</th:block>
 </html>

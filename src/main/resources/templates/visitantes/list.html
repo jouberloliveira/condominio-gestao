@@ -1,40 +1,117 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
-<head><title>Visitantes</title></head>
-<body>
-    <div th:fragment="content">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold">Visitantes</h2>
-            <a href="/visitantes/new" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Novo Visitante</a>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{::content})}"
+      lang="pt-BR">
+<th:block th:fragment="content">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-gray-800">Controle de Visitantes</h2>
+            <p class="text-sm text-gray-500 mt-0.5">Registre e acompanhe a entrada de visitantes</p>
         </div>
-        <div class="bg-white shadow-md rounded overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-200">
+        <a th:href="@{/visitantes/new}"
+           class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Registrar Visitante
+        </a>
+    </div>
+
+    <div class="flex flex-wrap gap-3 mb-4">
+        <input id="search" type="text" placeholder="Buscar por nome ou documento..."
+               oninput="filterTable()"
+               class="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        <select id="filterAtivo" onchange="filterTable()"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Todos</option>
+            <option value="SIM">Ativos</option>
+            <option value="NAO">Inativos</option>
+        </select>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-100" id="visitantes-table">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left">Nome</th>
-                        <th class="px-6 py-3 text-left">Unidade</th>
-                        <th class="px-6 py-3 text-left">Tipo</th>
-                        <th class="px-6 py-3 text-left">Autorizado Por</th>
-                        <th class="px-6 py-3 text-left">Ativo</th>
-                        <th class="px-6 py-3 text-left">Ações</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Visitante</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipo</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Unidade</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Autorizado Por</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Entrada</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr th:each="visitante : ${visitantes}" class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4" th:text="${visitante.nome}"></td>
-                        <td class="px-6 py-4" th:text="${visitante.unidade.identificacao}"></td>
-                        <td class="px-6 py-4" th:text="${visitante.tipoVisitante}"></td>
-                        <td class="px-6 py-4" th:text="${visitante.autorizadoPor != null} ? ${visitante.autorizadoPor.nome} : '-'"></td>
-                        <td class="px-6 py-4" th:text="${visitante.ativo}"></td>
+                <tbody class="divide-y divide-gray-100">
+                    <tr th:if="${#lists.isEmpty(visitantes)}">
+                        <td colspan="7" class="px-6 py-12 text-center text-sm text-gray-400">
+                            Nenhum visitante registrado.
+                        </td>
+                    </tr>
+                    <tr th:each="visitante : ${visitantes}" class="hover:bg-gray-50 transition-colors"
+                        th:attr="data-ativo=${visitante.ativo}">
                         <td class="px-6 py-4">
-                            <a th:href="@{/visitantes/edit/{id}(id=${visitante.id})}" class="text-blue-600 hover:underline mr-2">Editar</a>
-                            <a th:href="@{/visitantes/delete/{id}(id=${visitante.id})}" class="text-red-600 hover:underline" 
-                               onclick="return confirm('Confirma exclusão?')">Excluir</a>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-xs font-semibold text-purple-700 flex-shrink-0"
+                                     th:text="${#strings.substring(visitante.nome, 0, 1).toUpperCase()}">V</div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800" th:text="${visitante.nome}">—</p>
+                                    <p class="text-xs text-gray-400" th:text="${visitante.documento} ?: ''">—</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                                  th:text="${visitante.tipoVisitante}">—</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
+                                  th:text="${visitante.unidade?.identificacao} ?: '—'">—</span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600"
+                            th:text="${visitante.autorizadoPor?.nome} ?: '—'">—</td>
+                        <td class="px-6 py-4 text-sm text-gray-500"
+                            th:text="${visitante.dataHoraEntrada != null} ? ${#temporals.format(visitante.dataHoraEntrada, 'dd/MM HH:mm')} : '—'">—</td>
+                        <td class="px-6 py-4">
+                            <span th:class="${visitante.ativo?.name() == 'SIM'} ? 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800' : 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500'"
+                                  th:text="${visitante.ativo?.name() == 'SIM'} ? 'Ativo' : 'Inativo'">—</span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a th:href="@{/visitantes/{id}/edit(id=${visitante.id})}"
+                                   class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                    Editar
+                                </a>
+                                <a th:href="@{/visitantes/{id}/delete(id=${visitante.id})}"
+                                   sec:authorize="hasAnyRole('ADMIN','PORTEIRO')"
+                                   onclick="return confirm('Deseja excluir este visitante?')"
+                                   class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                                    Excluir
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-100 text-xs text-gray-500"
+             th:text="${#lists.size(visitantes)} + ' visitante(s) registrado(s)'"></div>
     </div>
-</body>
+
+    <script>
+        function filterTable() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const ativo = document.getElementById('filterAtivo').value;
+            document.querySelectorAll('#visitantes-table tbody tr[class]').forEach(row => {
+                const matchText = row.textContent.toLowerCase().includes(q);
+                const matchAtivo = !ativo || row.dataset.ativo === ativo;
+                row.style.display = (matchText && matchAtivo) ? '' : 'none';
+            });
+        }
+    </script>
+
+</th:block>
 </html>

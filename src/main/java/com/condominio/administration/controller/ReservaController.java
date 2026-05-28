@@ -28,6 +28,14 @@ public class ReservaController {
         m.addAttribute("statusList", StatusReserva.values());
     }
 
+    @GetMapping("/calendario")
+    public String calendario(Model m) {
+        m.addAttribute("reservas", service.findAll());
+        m.addAttribute("currentPage", "reservas");
+        m.addAttribute("title", "Calendário de Reservas");
+        return "reservas/calendario";
+    }
+
     @GetMapping
     public String list(Model m) {
         m.addAttribute("reservas", service.findAll());
