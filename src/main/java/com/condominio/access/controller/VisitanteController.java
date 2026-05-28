@@ -16,9 +16,9 @@ public class VisitanteController {
     private final VisitanteService service;
     private final UnidadeService unidadeService;
     private final MoradorService moradorService;
-    @GetMapping public String list(Model m) { m.addAttribute("visitantes", service.findAll()); return "visitantes/list"; }
-    @GetMapping("/new") public String newForm(Model m) { m.addAttribute("visitante", new Visitante()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); return "visitantes/form"; }
-    @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("visitante", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); return "visitantes/form"; }
+    @GetMapping public String list(Model m) { m.addAttribute("visitantes", service.findAll()); m.addAttribute("currentPage","visitantes"); m.addAttribute("title","Visitantes"); return "visitantes/list"; }
+    @GetMapping("/new") public String newForm(Model m) { m.addAttribute("visitante", new Visitante()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","visitantes"); m.addAttribute("title","Novo Visitante"); return "visitantes/form"; }
+    @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("visitante", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); m.addAttribute("currentPage","visitantes"); m.addAttribute("title","Editar Visitante"); return "visitantes/form"; }
     @PostMapping
     public String save(@Valid @ModelAttribute Visitante v, BindingResult r, Model m, RedirectAttributes ra) {
         if (r.hasErrors()) { m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("moradores", moradorService.findAll()); return "visitantes/form"; }

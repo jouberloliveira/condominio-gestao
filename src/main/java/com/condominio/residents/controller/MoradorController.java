@@ -14,9 +14,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class MoradorController {
     private final MoradorService service;
     private final UnidadeService unidadeService;
-    @GetMapping public String list(Model m) { m.addAttribute("moradores", service.findAll()); return "moradores/list"; }
-    @GetMapping("/new") public String newForm(Model m) { m.addAttribute("morador", new Morador()); m.addAttribute("unidades", unidadeService.findAll()); return "moradores/form"; }
-    @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("morador", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); return "moradores/form"; }
+    @GetMapping public String list(Model m) { m.addAttribute("moradores", service.findAll()); m.addAttribute("currentPage","moradores"); m.addAttribute("title","Moradores"); return "moradores/list"; }
+    @GetMapping("/new") public String newForm(Model m) { m.addAttribute("morador", new Morador()); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("currentPage","moradores"); m.addAttribute("title","Novo Morador"); return "moradores/form"; }
+    @GetMapping("/{id}/edit") public String editForm(@PathVariable Long id, Model m) { m.addAttribute("morador", service.findById(id)); m.addAttribute("unidades", unidadeService.findAll()); m.addAttribute("currentPage","moradores"); m.addAttribute("title","Editar Morador"); return "moradores/form"; }
     @PostMapping
     public String save(@Valid @ModelAttribute Morador mo, BindingResult r, Model m, RedirectAttributes ra) {
         if (r.hasErrors()) { m.addAttribute("unidades", unidadeService.findAll()); return "moradores/form"; }
