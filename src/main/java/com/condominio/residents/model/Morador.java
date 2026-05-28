@@ -5,7 +5,7 @@ import com.condominio.residents.enums.TipoMorador;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CPF;
-@Entity @Table(name = "residents")
+@Entity @Table(name = "moradores")
 public class Morador {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @NotNull(message = "Unidade é obrigatória") @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "unidade_id", nullable = false) private Unidade unidade;

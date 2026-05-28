@@ -1,0 +1,6 @@
+package com.condominio.residents.enums;
+
+public enum CargoColaborador {
+    ZELADOR, PORTEIRO, FAXINEIRO, JARDINEIRO, SEGURANCA, ELETRICISTA,
+    ENCANADOR, ADMINISTRADOR, AUXILIAR_MANUTENCAO, OUTROS
+}

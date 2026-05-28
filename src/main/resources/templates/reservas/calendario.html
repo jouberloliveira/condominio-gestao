@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}"
+      lang="pt-BR">
+<th:block th:fragment="content">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-gray-800">Calendário de Reservas</h2>
+            <p class="text-sm text-gray-500 mt-0.5">Visualize as reservas por data</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a th:href="@{/reservas}"
+               class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg border border-gray-300 transition-colors">
+                Lista
+            </a>
+            <a th:href="@{/reservas/new}"
+               class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nova Reserva
+            </a>
+        </div>
+    </div>
+
+    <!-- Calendar container -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <!-- Calendar header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <button id="prev-month"
+                    class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h3 id="calendar-title" class="text-base font-semibold text-gray-800"></h3>
+            <button id="next-month"
+                    class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Days header -->
+        <div class="grid grid-cols-7 bg-gray-50 border-b border-gray-100">
+            <div th:each="day : ${ {'Dom','Seg','Ter','Qua','Qui','Sex','Sáb'} }"
+                 class="py-2 text-center text-xs font-semibold text-gray-500 uppercase" th:text="${day}">Dia</div>
+        </div>
+
+        <!-- Calendar grid -->
+        <div id="calendar-grid" class="grid grid-cols-7 divide-x divide-y divide-gray-100"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="flex flex-wrap items-center gap-4 mt-4">
+        <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <div class="w-3 h-3 rounded-full bg-blue-400"></div> Solicitada
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <div class="w-3 h-3 rounded-full bg-green-400"></div> Aprovada
+        </div>
+        <div class="flex items-center gap-1.5 text-xs text-gray-600">
+            <div class="w-3 h-3 rounded-full bg-gray-400"></div> Realizada/Cancelada
+        </div>
+    </div>
+
+    <!-- Hidden data: pass reservas to JS -->
+    <script th:inline="javascript">
+        const reservasData = /*[[${reservas}]]*/ [];
+    </script>
+
+    <script>
+        const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        let current = new Date();
+        current.setDate(1);
+
+        function statusColor(status) {
+            if (!status) return 'bg-gray-200 text-gray-700';
+            if (status === 'APROVADA') return 'bg-green-100 text-green-800';
+            if (status === 'SOLICITADA') return 'bg-blue-100 text-blue-800';
+            return 'bg-gray-100 text-gray-600';
+        }
+
+        function renderCalendar() {
+            const year = current.getFullYear();
+            const month = current.getMonth();
+            document.getElementById('calendar-title').textContent = `${MONTHS[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            const today = new Date();
+
+            for (let i = 0; i < firstDay; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'min-h-[80px] p-1 bg-gray-50';
+                grid.appendChild(cell);
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cell = document.createElement('div');
+                const isToday = today.getDate() === d && today.getMonth() === month && today.getFullYear() === year;
+                cell.className = `min-h-[80px] p-1.5 ${isToday ? 'bg-blue-50' : 'hover:bg-gray-50'} transition-colors`;
+
+                const dayNum = document.createElement('div');
+                dayNum.className = `text-xs font-semibold mb-1 ${isToday ? 'text-blue-600' : 'text-gray-500'}`;
+                dayNum.textContent = d;
+                cell.appendChild(dayNum);
+
+                const dateStr = `${year}-${String(month + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                if (typeof reservasData !== 'undefined' && Array.isArray(reservasData)) {
+                    reservasData.filter(r => {
+                        if (!r.inicio) return false;
+                        return r.inicio.startsWith(dateStr);
+                    }).slice(0,2).forEach(r => {
+                        const tag = document.createElement('div');
+                        tag.className = `text-xs px-1.5 py-0.5 rounded mb-0.5 truncate cursor-pointer ${statusColor(r.status)}`;
+                        tag.title = `${r.area || '—'} — ${r.solicitante?.nome || '—'}`;
+                        tag.textContent = r.area || '—';
+                        cell.appendChild(tag);
+                    });
+                }
+
+                grid.appendChild(cell);
+            }
+
+            const remaining = (7 - (firstDay + daysInMonth) % 7) % 7;
+            for (let i = 0; i < remaining; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'min-h-[80px] p-1 bg-gray-50';
+                grid.appendChild(cell);
+            }
+        }
+
+        document.getElementById('prev-month').addEventListener('click', () => {
+            current.setMonth(current.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('next-month').addEventListener('click', () => {
+            current.setMonth(current.getMonth() + 1);
+            renderCalendar();
+        });
+
+        renderCalendar();
+    </script>
+
+</th:block>
+</html>

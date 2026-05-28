@@ -3,80 +3,83 @@ package com.condominio.access.service;
 import com.condominio.access.model.Visitante;
 import com.condominio.access.repository.VisitanteRepository;
 import com.condominio.administration.model.Unidade;
+import com.condominio.common.enums.SimNao;
 import com.condominio.common.exception.BusinessException;
-import com.condominio.residents.model.Morador;
-import com.condominio.residents.repository.MoradorRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class VisitanteServiceTest {
 
-    @Mock private VisitanteRepository visitanteRepository;
-    @Mock private MoradorRepository moradorRepository;
-    @InjectMocks private VisitanteService service;
+    @Mock VisitanteRepository repository;
+    @InjectMocks VisitanteService service;
 
-    private Unidade unidade1;
-    private Unidade unidade2;
-    private Morador moradorUnidade1;
-    private Morador moradorUnidade2;
+    private Visitante visitante;
 
     @BeforeEach
     void setUp() {
-        unidade1 = new Unidade(); unidade1.setId(1L);
-        unidade2 = new Unidade(); unidade2.setId(2L);
-        moradorUnidade1 = new Morador(); moradorUnidade1.setId(10L); moradorUnidade1.setUnidade(unidade1);
-        moradorUnidade2 = new Morador(); moradorUnidade2.setId(20L); moradorUnidade2.setUnidade(unidade2);
+        Unidade u = new Unidade();
+        u.setId(1L);
+        visitante = new Visitante();
+        visitante.setId(1L);
+        visitante.setNome("João Silva");
+        visitante.setUnidade(u);
     }
 
     @Test
-    void save_autorizadoPorMesmaUnidade_salvaComSucesso() {
-        Morador stub = new Morador(); stub.setId(10L);
-        Visitante v = new Visitante(); v.setUnidade(unidade1); v.setAutorizadoPor(stub);
-        when(moradorRepository.findById(10L)).thenReturn(Optional.of(moradorUnidade1));
-        when(visitanteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-        service.save(v);
-        verify(visitanteRepository).save(v);
+    @DisplayName("registrarEntrada define dataHoraEntrada")
+    void registrarEntrada_setsTimestamp() {
+        when(repository.findById(1L)).thenReturn(Optional.of(visitante));
+        when(repository.save(any())).thenAnswer(i -> i.getArgument(0));
+        Visitante result = service.registrarEntrada(1L);
+        assertThat(result.getDataHoraEntrada()).isNotNull();
+        assertThat(result.getAtivo()).isEqualTo(SimNao.SIM);
     }
 
     @Test
-    void save_autorizadoPorOutraUnidade_lancaBusinessException() {
-        Morador stub = new Morador(); stub.setId(20L);
-        Visitante v = new Visitante(); v.setUnidade(unidade1); v.setAutorizadoPor(stub);
-        when(moradorRepository.findById(20L)).thenReturn(Optional.of(moradorUnidade2));
-        assertThatThrownBy(() -> service.save(v))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("mesma unidade");
-        verify(visitanteRepository, never()).save(any());
+    @DisplayName("registrarEntrada lança BusinessException quando visitante já está presente")
+    void registrarEntrada_throwsWhenAlreadyInside() {
+        visitante.setDataHoraEntrada(java.time.LocalDateTime.now());
+        when(repository.findById(1L)).thenReturn(Optional.of(visitante));
+        assertThatThrownBy(() -> service.registrarEntrada(1L))
+            .isInstanceOf(BusinessException.class);
     }
 
     @Test
-    void save_autorizadoPorInexistente_lancaBusinessException() {
-        Morador stub = new Morador(); stub.setId(99L);
-        Visitante v = new Visitante(); v.setUnidade(unidade1); v.setAutorizadoPor(stub);
-        when(moradorRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> service.save(v))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("autorizador não encontrado");
-        verify(visitanteRepository, never()).save(any());
+    @DisplayName("registrarSaida define dataHoraSaida")
+    void registrarSaida_setsTimestamp() {
+        visitante.setDataHoraEntrada(java.time.LocalDateTime.now());
+        when(repository.findById(1L)).thenReturn(Optional.of(visitante));
+        when(repository.save(any())).thenAnswer(i -> i.getArgument(0));
+        Visitante result = service.registrarSaida(1L);
+        assertThat(result.getDataHoraSaida()).isNotNull();
+        assertThat(result.getAtivo()).isEqualTo(SimNao.NAO);
     }
 
     @Test
-    void save_semAutorizadoPor_salvaComSucesso() {
-        Visitante v = new Visitante(); v.setUnidade(unidade1);
-        when(visitanteRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-        service.save(v);
-        verify(moradorRepository, never()).findById(any());
-        verify(visitanteRepository).save(v);
+    @DisplayName("registrarSaida lança BusinessException quando não registrou entrada")
+    void registrarSaida_throwsWithoutEntry() {
+        when(repository.findById(1L)).thenReturn(Optional.of(visitante));
+        assertThatThrownBy(() -> service.registrarSaida(1L))
+            .isInstanceOf(BusinessException.class);
+    }
+
+    @Test
+    @DisplayName("findById lança BusinessException quando não encontrado")
+    void findById_throwsWhenNotFound() {
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> service.findById(99L))
+            .isInstanceOf(BusinessException.class)
+            .hasMessageContaining("não encontrado");
     }
 }

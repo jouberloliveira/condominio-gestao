@@ -1,4 +1,5 @@
 package com.condominio.common.security;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,23 +10,51 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-@Configuration @EnableWebSecurity @EnableMethodSecurity
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
-    @Bean public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
-    @Bean public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception { return cfg.getAuthenticationManager(); }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/login","/acesso-negado","/css/**","/js/**","/images/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers(
+                    "/login", "/recuperar-senha", "/acesso-negado",
+                    "/css/**", "/js/**", "/images/**",
+                    "/h2-console/**",
+                    "/swagger-ui/**", "/swagger-ui.html",
+                    "/api-docs/**", "/api-docs",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated())
-            .formLogin(f -> f.loginPage("/login").defaultSuccessUrl("/dashboard",true).failureUrl("/login?error").permitAll())
-            .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll())
+                .anyRequest().authenticated()
+            )
+            .formLogin(f -> f
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .failureUrl("/login?error")
+                .permitAll()
+            )
+            .logout(l -> l
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            )
             .exceptionHandling(e -> e.accessDeniedPage("/acesso-negado"))
             .headers(h -> h.frameOptions(fo -> fo.sameOrigin()))
-            .csrf(c -> c.ignoringRequestMatchers("/h2-console/**"));
+            .csrf(c -> c
+                .ignoringRequestMatchers("/h2-console/**", "/api/**")
+            );
         return http.build();
     }
 }
