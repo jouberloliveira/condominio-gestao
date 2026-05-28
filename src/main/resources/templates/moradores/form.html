@@ -1,63 +1,120 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::content})}">
-<head><title>Morador</title></head>
-<body>
-    <div th:fragment="content">
-        <h2 class="text-3xl font-bold mb-6" th:text="${morador.id == null} ? 'Novo Morador' : 'Editar Morador'">Morador</h2>
-        <div class="bg-white shadow-md rounded p-6">
-            <form th:action="@{/moradores}" th:object="${morador}" method="post">
-                <input type="hidden" th:field="*{id}">
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Unidade *</label>
-                    <select th:field="*{unidade}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="u : ${unidades}" th:value="${u.id}" th:text="${u.identificacao}"></option>
-                    </select>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::content})}"
+      lang="pt-BR">
+<th:block th:fragment="content">
+
+    <div class="mb-6">
+        <nav class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+            <a th:href="@{/moradores}" class="hover:text-blue-600">Moradores</a>
+            <span>/</span>
+            <span class="text-gray-800 font-medium" th:text="${morador.id == null} ? 'Novo' : 'Editar'">Novo</span>
+        </nav>
+        <h2 class="text-xl font-bold text-gray-800"
+            th:text="${morador.id == null} ? 'Novo Morador' : 'Editar Morador'">Morador</h2>
+    </div>
+
+    <div class="max-w-2xl">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+            <form th:action="@{/moradores}" th:object="${morador}" method="post" novalidate>
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="space-y-5">
+
+                    <div>
+                        <label for="unidade" class="block text-sm font-medium text-gray-700 mb-1.5">Unidade *</label>
+                        <select id="unidade" th:field="*{unidade}"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                required>
+                            <option value="">Selecione a unidade...</option>
+                            <option th:each="u : ${unidades}" th:value="${u.id}"
+                                    th:text="${u.identificacao}"
+                                    th:selected="${morador.unidade != null and morador.unidade.id == u.id}"></option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="nome" class="block text-sm font-medium text-gray-700 mb-1.5">Nome completo *</label>
+                            <input id="nome" type="text" th:field="*{nome}"
+                                   placeholder="Digite o nome completo"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required/>
+                            <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"
+                               class="mt-1 text-xs text-red-600"></p>
+                        </div>
+
+                        <div>
+                            <label for="cpf" class="block text-sm font-medium text-gray-700 mb-1.5">CPF *</label>
+                            <input id="cpf" type="text" th:field="*{cpf}"
+                                   placeholder="000.000.000-00"
+                                   maxlength="14"
+                                   oninput="maskCpf(this)"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   required/>
+                            <p th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"
+                               class="mt-1 text-xs text-red-600"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="telefone" class="block text-sm font-medium text-gray-700 mb-1.5">Telefone</label>
+                            <input id="telefone" type="text" th:field="*{telefone}"
+                                   placeholder="(00) 00000-0000"
+                                   maxlength="15"
+                                   oninput="maskTelefone(this)"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+                            <input id="email" type="email" th:field="*{email}"
+                                   placeholder="email@exemplo.com"
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"/>
+                            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+                               class="mt-1 text-xs text-red-600"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="tipoMorador" class="block text-sm font-medium text-gray-700 mb-1.5">Tipo *</label>
+                            <select id="tipoMorador" th:field="*{tipoMorador}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Selecione...</option>
+                                <option th:each="t : ${tipos}" th:value="${t}" th:text="${t}"></option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="responsavelUnidade" class="block text-sm font-medium text-gray-700 mb-1.5">Responsável pela Unidade *</label>
+                            <select id="responsavelUnidade" th:field="*{responsavelUnidade}"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required>
+                                <option value="">Selecione...</option>
+                                <option th:each="s : ${simNaoList}" th:value="${s}" th:text="${s}"></option>
+                            </select>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Nome *</label>
-                    <input type="text" th:field="*{nome}" class="w-full border rounded px-3 py-2" required>
-                    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="text-red-600 text-sm"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">CPF *</label>
-                    <input type="text" th:field="*{cpf}" class="w-full border rounded px-3 py-2" required maxlength="14"
-                           placeholder="000.000.000-00" oninput="maskCpf(this)">
-                    <span th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}" class="text-red-600 text-sm"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Telefone</label>
-                    <input type="text" th:field="*{telefone}" class="w-full border rounded px-3 py-2" maxlength="15"
-                           placeholder="(00) 00000-0000" oninput="maskTelefone(this)">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Email</label>
-                    <input type="email" th:field="*{email}" class="w-full border rounded px-3 py-2">
-                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-600 text-sm"></span>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Tipo Morador *</label>
-                    <select th:field="*{tipoMorador}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="t : ${T(com.condominio.gestao.enums.TipoMorador).values()}"
-                                th:value="${t}" th:text="${t}"></option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 font-bold mb-2">Responsável pela Unidade *</label>
-                    <select th:field="*{responsavelUnidade}" class="w-full border rounded px-3 py-2" required>
-                        <option value="">Selecione...</option>
-                        <option th:each="r : ${T(com.condominio.gestao.enums.SimNao).values()}"
-                                th:value="${r}" th:text="${r}"></option>
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
-                    <a href="/moradores" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancelar</a>
+
+                <div class="flex items-center gap-3 mt-7 pt-5 border-t border-gray-100">
+                    <button type="submit"
+                            class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Salvar Morador
+                    </button>
+                    <a th:href="@{/moradores}"
+                       class="px-5 py-2.5 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg border border-gray-300 transition-colors">
+                        Cancelar
+                    </a>
                 </div>
             </form>
         </div>
     </div>
+
     <script>
         function maskCpf(input) {
             let v = input.value.replace(/\D/g, '').slice(0, 11);
@@ -66,15 +123,15 @@
             else if (v.length > 3) v = v.replace(/^(\d{3})(\d{0,3})/, '$1.$2');
             input.value = v;
         }
-
         function maskTelefone(input) {
             let v = input.value.replace(/\D/g, '').slice(0, 11);
             if (v.length > 10) v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
             else if (v.length > 6) v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
             else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
-            else if (v.length > 0) v = v.replace(/^(\d{0,2})/, '($1');
+            else if (v.length > 0) v = '(' + v;
             input.value = v;
         }
     </script>
-</body>
+
+</th:block>
 </html>

@@ -2,7 +2,7 @@ package com.condominio.administration.model;
 import com.condominio.administration.enums.SituacaoUnidade;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-@Entity @Table(name = "units", uniqueConstraints = @UniqueConstraint(columnNames = {"bloco","numero"}))
+@Entity @Table(name = "unidades", uniqueConstraints = @UniqueConstraint(columnNames = {"bloco","numero"}))
 public class Unidade {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @NotBlank(message = "Bloco é obrigatório") @Column(nullable = false) private String bloco;

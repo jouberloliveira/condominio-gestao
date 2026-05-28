@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Recuperar Senha — Gestão de Condomínio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 flex items-center justify-center p-4">
+
+<div class="w-full max-w-sm">
+
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-2xl mb-4 shadow-lg">
+            <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Recuperar Senha</h1>
+        <p class="text-blue-300 text-sm mt-1">Informe seu e-mail para receber as instruções</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+
+        <div id="form-section">
+            <p class="text-sm text-gray-600 mb-5">
+                Digite o e-mail cadastrado na sua conta. Enviaremos as instruções para redefinir sua senha.
+            </p>
+
+            <form id="recovery-form" class="space-y-5" onsubmit="handleSubmit(event)">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">E-mail</label>
+                    <input id="email" name="email" type="email"
+                           placeholder="seu@email.com"
+                           autofocus autocomplete="email"
+                           required
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm
+                                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                  placeholder-gray-400 transition"/>
+                </div>
+
+                <button type="submit"
+                        class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold
+                               rounded-lg text-sm transition-colors focus:outline-none focus:ring-2
+                               focus:ring-blue-500 focus:ring-offset-2">
+                    Enviar instruções
+                </button>
+            </form>
+        </div>
+
+        <div id="success-section" class="hidden text-center">
+            <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">E-mail enviado!</h3>
+            <p class="text-sm text-gray-500 mb-5">
+                Se o e-mail estiver cadastrado, você receberá as instruções em breve. Verifique também sua caixa de spam.
+            </p>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-gray-100 text-center">
+            <a th:href="@{/login}"
+               class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                ← Voltar ao login
+            </a>
+        </div>
+    </div>
+
+    <p class="text-center text-xs text-blue-400 mt-6">
+        &copy; 2025 Gestão de Condomínio. Todos os direitos reservados.
+    </p>
+</div>
+
+<script>
+    function handleSubmit(e) {
+        e.preventDefault();
+        document.getElementById('form-section').classList.add('hidden');
+        document.getElementById('success-section').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>

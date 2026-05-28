@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head><title th:text="${errorTitle}">Erro</title></head>
+<body>
+<div layout:fragment="content" class="container mx-auto p-6">
+  <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-lg mx-auto">
+    <h2 class="text-xl font-bold text-red-700 mb-2" th:text="${errorTitle}">Erro</h2>
+    <p class="text-red-600" th:text="${errorMessage}">Mensagem de erro</p>
+    <a href="javascript:history.back()" class="mt-4 inline-block text-blue-600 hover:underline">← Voltar</a>
+  </div>
+</div>
+</body>
+</html>
