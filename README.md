@@ -1,5 +1,7 @@
 # Sistema de Gestão Condominial
 
+[![CI](https://github.com/jouberloliveira/condominio-gestao/actions/workflows/ci.yml/badge.svg)](https://github.com/jouberloliveira/condominio-gestao/actions/workflows/ci.yml)
+
 Sistema web para gestão de condomínios, desenvolvido com Java 21 + Spring Boot 3 + Thymeleaf + Tailwind CSS.
 
 ## Funcionalidades
