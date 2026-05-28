@@ -3,11 +3,11 @@ INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
 INSERT INTO roles (name) VALUES ('ROLE_MORADOR');
 INSERT INTO roles (name) VALUES ('ROLE_PORTEIRO');
 
--- Users (BCrypt of "password123")
+-- Users (BCrypt of "password123", strength=10)
 INSERT INTO users (username, password, email, enabled) VALUES
-  ('admin',    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyV9anVm.', 'admin@condominio.com',    TRUE),
-  ('morador1', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyV9anVm.', 'morador1@condominio.com', TRUE),
-  ('porteiro1','$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyV9anVm.', 'porteiro1@condominio.com',TRUE);
+  ('admin',    '$2b$10$72kx2vf61km1nj8M4rP0T.t5OZ.rUAUf2ax8N5TdkiWUxFI5Shq/m', 'admin@condominio.com',    TRUE),
+  ('morador1', '$2b$10$72kx2vf61km1nj8M4rP0T.t5OZ.rUAUf2ax8N5TdkiWUxFI5Shq/m', 'morador1@condominio.com', TRUE),
+  ('porteiro1','$2b$10$72kx2vf61km1nj8M4rP0T.t5OZ.rUAUf2ax8N5TdkiWUxFI5Shq/m', 'porteiro1@condominio.com',TRUE);
 
 -- Assign roles
 INSERT INTO user_roles (user_id, role_id)
